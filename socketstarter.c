@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>
 #include <sys/param.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define BUFLEN 1024
 
@@ -56,15 +57,21 @@ int main(int argc, char *argv[]) {
         perror("listen()");
         exit(1);
     }
-    sock = accept(server_fd, NULL, NULL);
+    rv = sizeof(addr);
+    sock = accept(server_fd, (struct sockaddr*) &addr, &rv);
     if (sock < 0) {
         perror("accept()");
         exit(1);
     }
     close(server_fd);
+    printf("Connection from %s\n", inet_ntoa(addr.sin_addr));
     start_time = time(NULL);
+    printf("Running startup: %s\n", getenv("START_COMMAND"));
     system(getenv("START_COMMAND"));
 
+    memset(&addr,0,sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(atoi(getenv("PORT")));
     addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (client < 0) {
@@ -108,6 +115,7 @@ int main(int argc, char *argv[]) {
     close(sock);
     close(client);
 
+    printf("Running shutdown: %s\n", getenv("STOP_COMMAND"));
     system(getenv("STOP_COMMAND"));
     return 0;
 }
