@@ -1,5 +1,15 @@
 # socketstarter
-This program is used as a method to automatically start infrequently used services on demand.  This can be helpful for services that take too much CPU or memory when idle.  On startup, this service will bind to the application's port.  Upon receiving a connection, it will release the port, start the service, and proxy that first connection to the service.  Subsequent connections should then go directly to the service.  After the first connection and a prescribed waiting period is done, the service will automatically be stopped.
+
+This program is used as a method to automatically start infrequently used
+services on demand.  This can be helpful for services that take too much CPU
+or memory when idle.  On startup, this service will bind to the
+application's port.  Upon receiving a connection, it will release the port,
+start the service, and proxy that first connection to the service. 
+Subsequent connections should then go directly to the service.  After the
+first connection and a prescribed waiting period is done, the service will
+automatically be stopped.  Ideally used for applications which do not
+conform with
+[systemd socket activation](https://www.freedesktop.org/software/systemd/man/systemd-socket-activate.html).
 
 ## Configuration
 
